@@ -4,6 +4,7 @@ const { MongoClient } = require("mongodb");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 const path = require("path");
+const fs = require("fs");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -11,23 +12,71 @@ const SEND_EMAILS = process.env.SEND_EMAILS !== "false"; // Default to true unle
 const APP_READY = process.env.APP_READY === "true"; // Default to false
 const MONGODB_URI = process.env.MONGODB_URI;
 
+// File-based fallback storage
+const EMAILS_FILE = path.join(__dirname, "emails.json");
+const STATUS_FILE = path.join(__dirname, "status.json");
+
+function loadEmails() {
+  try {
+    if (fs.existsSync(EMAILS_FILE)) {
+      const data = fs.readFileSync(EMAILS_FILE, "utf8");
+      return JSON.parse(data);
+    }
+  } catch (error) {
+    console.error("Error loading emails from file:", error);
+  }
+  return [];
+}
+
+function saveEmails(emails) {
+  try {
+    fs.writeFileSync(EMAILS_FILE, JSON.stringify(emails, null, 2));
+  } catch (error) {
+    console.error("Error saving emails to file:", error);
+  }
+}
+
+function loadStatus() {
+  try {
+    if (fs.existsSync(STATUS_FILE)) {
+      const data = fs.readFileSync(STATUS_FILE, "utf8");
+      return JSON.parse(data);
+    }
+  } catch (error) {
+    console.error("Error loading status from file:", error);
+  }
+  return { notified: false };
+}
+
+function saveStatus(status) {
+  try {
+    fs.writeFileSync(STATUS_FILE, JSON.stringify(status, null, 2));
+  } catch (error) {
+    console.error("Error saving status to file:", error);
+  }
+}
+
 // MongoDB setup
 let db, emailsCollection, statusCollection;
 
 async function connectToMongoDB() {
   try {
-    const client = await MongoClient.connect(MONGODB_URI, {
-      ssl: true,
-      tls: true,
-      tlsAllowInvalidCertificates: false,
-      tlsAllowInvalidHostnames: false,
-      retryWrites: true,
-      w: "majority",
+    console.log("Attempting to connect to MongoDB...");
+    console.log("MongoDB URI exists:", !!MONGODB_URI);
+    console.log(
+      "MongoDB URI starts with:",
+      MONGODB_URI ? MONGODB_URI.substring(0, 20) + "..." : "undefined"
+    );
+
+    const client = new MongoClient(MONGODB_URI, {
       maxPoolSize: 10,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
+      ssl: true,
+      tls: true,
     });
 
+    await client.connect();
     db = client.db();
     emailsCollection = db.collection("emails");
     statusCollection = db.collection("status");
@@ -118,25 +167,29 @@ app.post("/api/collect-email", async (req, res) => {
       return res.status(400).json({ error: "Valid email is required" });
     }
 
-    // Check if MongoDB is connected
-    if (!emailsCollection) {
-      console.log("MongoDB not connected - email collection disabled");
-      return res.status(503).json({
-        error:
-          "Email collection temporarily unavailable. Please try again later.",
-      });
+    // Use MongoDB if connected, otherwise use file storage
+    if (emailsCollection) {
+      // MongoDB is connected - use it
+      const existing = await emailsCollection.findOne({ email });
+      if (existing) {
+        return res.status(409).json({ error: "Email already registered" });
+      }
+
+      await emailsCollection.insertOne({ email, createdAt: new Date() });
+    } else {
+      // MongoDB not connected - use file storage
+      console.log("Using file-based storage for email collection");
+      const emails = loadEmails();
+
+      if (emails.some((e) => e.email === email)) {
+        return res.status(409).json({ error: "Email already registered" });
+      }
+
+      emails.push({ email, createdAt: new Date() });
+      saveEmails(emails);
     }
 
-    // Check if email already exists
-    const existing = await emailsCollection.findOne({ email });
-    if (existing) {
-      return res.status(409).json({ error: "Email already registered" });
-    }
-
-    // Add new email
-    await emailsCollection.insertOne({ email, createdAt: new Date() });
-
-    // Send welcome email only if enabled and MongoDB is connected
+    // Send welcome email only if enabled
     if (SEND_EMAILS) {
       await sendWelcomeEmail(email);
     }
