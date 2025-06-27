@@ -13,57 +13,89 @@ const MONGODB_URI = process.env.MONGODB_URI;
 
 // MongoDB setup
 let db, emailsCollection, statusCollection;
-MongoClient.connect(MONGODB_URI, { useUnifiedTopology: true })
-  .then((client) => {
+
+async function connectToMongoDB() {
+  try {
+    const client = await MongoClient.connect(MONGODB_URI, {
+      ssl: true,
+      tls: true,
+      tlsAllowInvalidCertificates: false,
+      tlsAllowInvalidHostnames: false,
+      retryWrites: true,
+      w: "majority",
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
+
     db = client.db();
     emailsCollection = db.collection("emails");
     statusCollection = db.collection("status");
-    console.log("Connected to MongoDB");
+    console.log("Connected to MongoDB successfully");
+    return true;
+  } catch (err) {
+    console.error("Failed to connect to MongoDB:", err);
+    console.log(
+      "Starting server without MongoDB - email collection will be disabled"
+    );
+    return false;
+  }
+}
 
+// Start server with or without MongoDB
+connectToMongoDB()
+  .then((mongoConnected) => {
     app.listen(PORT, async () => {
       console.log(`Server running on port ${PORT}`);
-      console.log(`Email sending: ${SEND_EMAILS ? "ENABLED" : "DISABLED"}`);
+      console.log(
+        `Email sending: ${
+          SEND_EMAILS && mongoConnected ? "ENABLED" : "DISABLED"
+        }`
+      );
       console.log(`App ready: ${APP_READY ? "YES" : "NO"}`);
-      console.log("Checking if app ready notification should be sent...");
 
-      // Auto-notify all users if APP_READY is true and not already notified
-      if (APP_READY && statusCollection) {
-        const notified = await statusCollection.findOne({ _id: "notified" });
-        if (!notified || notified.value !== true) {
-          console.log("Triggering app ready notification for all users...");
-          try {
-            const emails = await emailsCollection.find({}).toArray();
-            console.log(
-              "Found emails:",
-              emails.map((e) => e.email)
-            );
-            for (const { email } of emails) {
-              console.log("Sending app ready email to:", email);
-              await sendAppReadyEmail(email);
+      if (mongoConnected) {
+        console.log("Checking if app ready notification should be sent...");
+
+        // Auto-notify all users if APP_READY is true and not already notified
+        if (APP_READY && statusCollection) {
+          const notified = await statusCollection.findOne({ _id: "notified" });
+          if (!notified || notified.value !== true) {
+            console.log("Triggering app ready notification for all users...");
+            try {
+              const emails = await emailsCollection.find({}).toArray();
+              console.log(
+                "Found emails:",
+                emails.map((e) => e.email)
+              );
+              for (const { email } of emails) {
+                console.log("Sending app ready email to:", email);
+                await sendAppReadyEmail(email);
+              }
+              await statusCollection.updateOne(
+                { _id: "notified" },
+                { $set: { value: true, notifiedAt: new Date() } },
+                { upsert: true }
+              );
+              console.log("All users notified automatically on APP_READY=true");
+            } catch (error) {
+              console.error("Failed to notify users automatically:", error);
             }
-            await statusCollection.updateOne(
-              { _id: "notified" },
-              { $set: { value: true, notifiedAt: new Date() } },
-              { upsert: true }
+          } else {
+            console.log(
+              "Users have already been notified. Skipping notification."
             );
-            console.log("All users notified automatically on APP_READY=true");
-          } catch (error) {
-            console.error("Failed to notify users automatically:", error);
           }
         } else {
           console.log(
-            "Users have already been notified. Skipping notification."
+            "APP_READY is not true or statusCollection not ready. Skipping notification."
           );
         }
-      } else {
-        console.log(
-          "APP_READY is not true or statusCollection not ready. Skipping notification."
-        );
       }
     });
   })
   .catch((err) => {
-    console.error("Failed to connect to MongoDB:", err);
+    console.error("Critical error starting server:", err);
     process.exit(1);
   });
 
@@ -86,6 +118,15 @@ app.post("/api/collect-email", async (req, res) => {
       return res.status(400).json({ error: "Valid email is required" });
     }
 
+    // Check if MongoDB is connected
+    if (!emailsCollection) {
+      console.log("MongoDB not connected - email collection disabled");
+      return res.status(503).json({
+        error:
+          "Email collection temporarily unavailable. Please try again later.",
+      });
+    }
+
     // Check if email already exists
     const existing = await emailsCollection.findOne({ email });
     if (existing) {
@@ -95,7 +136,7 @@ app.post("/api/collect-email", async (req, res) => {
     // Add new email
     await emailsCollection.insertOne({ email, createdAt: new Date() });
 
-    // Send welcome email only if enabled
+    // Send welcome email only if enabled and MongoDB is connected
     if (SEND_EMAILS) {
       await sendWelcomeEmail(email);
     }
@@ -188,6 +229,14 @@ app.post("/api/notify-all", async (req, res) => {
       .status(403)
       .json({ error: "APP_READY is not set to true in .env" });
   }
+
+  // Check if MongoDB is connected
+  if (!statusCollection || !emailsCollection) {
+    return res.status(503).json({
+      error: "Database not connected. Please try again later.",
+    });
+  }
+
   const notified = await statusCollection.findOne({ _id: "notified" });
   if (notified && notified.value === true) {
     return res.status(409).json({ error: "Users have already been notified." });
@@ -211,6 +260,13 @@ app.post("/api/notify-all", async (req, res) => {
 // Get all collected emails (admin endpoint)
 app.get("/api/emails", async (req, res) => {
   try {
+    // Check if MongoDB is connected
+    if (!emailsCollection) {
+      return res.status(503).json({
+        error: "Database not connected. Please try again later.",
+      });
+    }
+
     const emails = await emailsCollection.find({}).toArray();
     res.json({ emails: emails.map((e) => e.email) });
   } catch (error) {
