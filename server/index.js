@@ -161,10 +161,13 @@ if (process.env.NODE_ENV === "production") {
 // Email collection endpoint
 app.post("/api/collect-email", async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, fullName } = req.body;
 
     if (!email || !email.includes("@")) {
       return res.status(400).json({ error: "Valid email is required" });
+    }
+    if (!fullName || fullName.trim().length < 2) {
+      return res.status(400).json({ error: "Full name is required" });
     }
 
     // Use MongoDB if connected, otherwise use file storage
@@ -175,7 +178,11 @@ app.post("/api/collect-email", async (req, res) => {
         return res.status(409).json({ error: "Email already registered" });
       }
 
-      await emailsCollection.insertOne({ email, createdAt: new Date() });
+      await emailsCollection.insertOne({
+        email,
+        fullName,
+        createdAt: new Date(),
+      });
     } else {
       // MongoDB not connected - use file storage
       console.log("Using file-based storage for email collection");
@@ -185,13 +192,13 @@ app.post("/api/collect-email", async (req, res) => {
         return res.status(409).json({ error: "Email already registered" });
       }
 
-      emails.push({ email, createdAt: new Date() });
+      emails.push({ email, fullName, createdAt: new Date() });
       saveEmails(emails);
     }
 
     // Send welcome email only if enabled
     if (SEND_EMAILS) {
-      await sendWelcomeEmail(email);
+      await sendWelcomeEmail(email, fullName);
     }
 
     res.json({
@@ -207,7 +214,7 @@ app.post("/api/collect-email", async (req, res) => {
 });
 
 // Email sending function
-async function sendWelcomeEmail(email) {
+async function sendWelcomeEmail(email, fullName) {
   try {
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -224,7 +231,7 @@ async function sendWelcomeEmail(email) {
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h1 style="color: #6366f1; text-align: center;">Welcome to CLO! 🎤</h1>
-          <p>Hi there!</p>
+          <p>Hi${fullName ? ` ${fullName}` : ""}!</p>
           <p>Thank you for joining the CLO beta waitlist! We're excited to have you on board.</p>
           <p><strong>What's CLO?</strong></p>
           <p>CLO is your voice-first AI confidant, designed to help you reflect on your romantic and professional relationships. Just talk—and CLO listens, learns, and gives you actionable insights.</p>
@@ -321,7 +328,9 @@ app.get("/api/emails", async (req, res) => {
     }
 
     const emails = await emailsCollection.find({}).toArray();
-    res.json({ emails: emails.map((e) => e.email) });
+    res.json({
+      emails: emails.map((e) => ({ email: e.email, fullName: e.fullName })),
+    });
   } catch (error) {
     res.status(500).json({ error: "Failed to read emails" });
   }

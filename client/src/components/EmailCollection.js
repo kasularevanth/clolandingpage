@@ -36,6 +36,7 @@ const EmailCollection = ({ email, setEmail, onSubmit, isSubmitting }) => {
             className="email-form"
           >
             <div className="form-group">
+              {/* The following UI is commented out as it's no longer needed:
               <input
                 type="email"
                 value={email}
@@ -44,6 +45,7 @@ const EmailCollection = ({ email, setEmail, onSubmit, isSubmitting }) => {
                 className="email-input"
                 required
               />
+              */}
               <button
                 type="submit"
                 disabled={isSubmitting}

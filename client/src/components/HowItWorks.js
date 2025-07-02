@@ -30,6 +30,57 @@ const HowItWorks = () => {
     },
   ];
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.3,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 50, scale: 0.9 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.8,
+        ease: "easeOut",
+      },
+    },
+  };
+
+  const iconVariants = {
+    hidden: { opacity: 0, scale: 0 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        duration: 0.6,
+        ease: "backOut",
+        delay: 0.3,
+      },
+    },
+  };
+
+  const numberVariants = {
+    hidden: { opacity: 0, scale: 0, rotate: -180 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      rotate: 0,
+      transition: {
+        duration: 0.8,
+        ease: "backOut",
+        delay: 0.1,
+      },
+    },
+  };
+
   return (
     <section className="section how-it-works">
       <div className="container">
@@ -40,25 +91,67 @@ const HowItWorks = () => {
           transition={{ duration: 0.8 }}
           className="section-header"
         >
-          <h2 className="section-title">💡 How It Works</h2>
+          <motion.h2
+            className="section-title"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={inView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            💡 How It Works
+          </motion.h2>
         </motion.div>
 
-        <div className="steps-grid">
+        <motion.div
+          className="steps-grid"
+          variants={containerVariants}
+          initial="hidden"
+          animate={inView ? "visible" : "hidden"}
+        >
           {steps.map((step, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 30 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.8, delay: index * 0.2 }}
+              variants={cardVariants}
               className="step-card"
+              whileHover={{
+                y: -10,
+                scale: 1.02,
+                transition: { duration: 0.3 },
+              }}
+              whileTap={{ scale: 0.98 }}
             >
-              <div className="step-number">{index + 1}</div>
-              <div className="step-icon">{step.icon}</div>
-              <h3 className="step-title">{step.title}</h3>
-              <p className="step-description">{step.description}</p>
+              <motion.div className="step-number" variants={numberVariants}>
+                {index + 1}
+              </motion.div>
+              <motion.div
+                className="step-icon"
+                variants={iconVariants}
+                whileHover={{
+                  scale: 1.1,
+                  rotate: 5,
+                  transition: { duration: 0.2 },
+                }}
+              >
+                {step.icon}
+              </motion.div>
+              <motion.h3
+                className="step-title"
+                initial={{ opacity: 0, y: 20 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}
+              >
+                {step.title}
+              </motion.h3>
+              <motion.p
+                className="step-description"
+                initial={{ opacity: 0, y: 20 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.5 + index * 0.1 }}
+              >
+                {step.description}
+              </motion.p>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
