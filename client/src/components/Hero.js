@@ -1,41 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import Waitlist from "./Waitlist";
 import WaitlistModal from "./WaitlistModal";
+import axios from "axios";
 import Lottie from "lottie-react";
 import voiceorb from "../assets/voiceorb.json";
-import axios from "axios";
+import LineSVG from "../assets/line.svg";
 
 const Hero = () => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [waitlist, setWaitlist] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
-
-  // Fetch waitlist on mount
-  useEffect(() => {
-    fetchWaitlist();
-  }, []);
-
-  const fetchWaitlist = async () => {
-    try {
-      const res = await axios.get("/api/emails");
-      setWaitlist(res.data.emails || []);
-    } catch (e) {
-      setWaitlist([]);
-    }
-  };
 
   const handleJoin = async ({ fullName, email }) => {
     setIsSubmitting(true);
     setSuccessMsg("");
     try {
       await axios.post("/api/collect-email", { fullName, email });
-      setSuccessMsg(
-        "Welcome to the waitlist! Check your inbox for a welcome email."
-      );
+      setSuccessMsg("Welcome to CLO! Check your inbox for a welcome email.");
       setModalOpen(false);
-      fetchWaitlist();
     } catch (e) {
       setSuccessMsg(
         e.response?.data?.error || "Something went wrong. Try again."
@@ -45,236 +27,335 @@ const Hero = () => {
     }
   };
 
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.8,
-        ease: "easeOut",
-      },
-    },
-  };
-
-  const textVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 1,
-        ease: "easeOut",
-      },
-    },
-  };
-
-  const floatingVariants = {
-    animate: {
-      y: [-10, 10, -10],
-      transition: {
-        duration: 3,
-        repeat: Infinity,
-        ease: "easeInOut",
-      },
-    },
-  };
-
-  const pulseVariants = {
-    animate: {
-      scale: [1, 1.05, 1],
-      transition: {
-        duration: 2,
-        repeat: Infinity,
-        ease: "easeInOut",
-      },
-    },
-  };
-
   return (
-    <section className="hero-section">
-      {/* Animated background elements */}
-      <motion.div
-        className="floating-orb-1"
-        variants={floatingVariants}
-        animate="animate"
+    <section
+      className="hero-section"
+      id="home"
+      style={{
+        position: "relative",
+        width: "100%",
+        minHeight: "100vh",
+        background: "#100417",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        paddingTop: "0px",
+        paddingBottom: "0px",
+        overflow: "hidden",
+      }}
+    >
+      {/* Background Elements */}
+      <div
         style={{
           position: "absolute",
-          top: "20%",
-          left: "10%",
-          width: "60px",
-          height: "60px",
-          background: "linear-gradient(135deg, #667eea, #764ba2)",
-          borderRadius: "50%",
-          opacity: 0.1,
-          zIndex: 1,
-        }}
-      />
-      <motion.div
-        className="floating-orb-2"
-        variants={floatingVariants}
-        animate="animate"
-        style={{
-          position: "absolute",
-          top: "60%",
-          right: "15%",
-          width: "40px",
-          height: "40px",
-          background: "linear-gradient(135deg, #f093fb, #f5576c)",
-          borderRadius: "50%",
-          opacity: 0.08,
-          zIndex: 1,
-        }}
-      />
-      <motion.div
-        className="floating-orb-3"
-        variants={floatingVariants}
-        animate="animate"
-        style={{
-          position: "absolute",
-          bottom: "20%",
-          left: "20%",
-          width: "50px",
-          height: "50px",
-          background: "linear-gradient(135deg, #4facfe, #00f2fe)",
-          borderRadius: "50%",
-          opacity: 0.06,
-          zIndex: 1,
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          background:
+            "linear-gradient(135deg, #100417 0%, #2D1B4E 50%, #4A2C6B 100%)",
+          zIndex: 0,
         }}
       />
 
-      <div className="hero-content-wrapper">
-        <div className="hero-left">
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <motion.div
-              variants={itemVariants}
-              className="hero-logo"
-              style={{ marginBottom: "2.5rem" }}
-            >
-              <motion.img
-                src="/assets/logo.svg"
-                alt="CLO Logo"
-                className="logo-image"
-                variants={pulseVariants}
-                animate="animate"
-              />
-            </motion.div>
-
-            <motion.h1
-              className="hero-headline"
-              style={{ textAlign: "left" }}
-              variants={textVariants}
-            >
-              <motion.span
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 1, delay: 0.5 }}
-                style={{ display: "inline-block" }}
-              >
-                Talk It Out.
-              </motion.span>{" "}
-              <motion.span
-                className="gradient-text"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 1, delay: 0.8 }}
-                style={{ display: "inline-block" }}
-              >
-                Grow Closer.
-              </motion.span>
-            </motion.h1>
-
-            <motion.p
-              className="hero-subheadline"
-              style={{ textAlign: "left" }}
-              variants={textVariants}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 1.1 }}
-            >
-              Your relationships, reimagined—through conversation and clarity.
-            </motion.p>
-
-            <motion.div
-              style={{
-                margin: "2.5rem 0 2rem 0",
-                display: "flex",
-                alignItems: "center",
-                gap: "1.2rem",
-              }}
-              variants={itemVariants}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.4 }}
-            >
-              <motion.div
-                style={{ width: 70, height: 70 }}
-                variants={pulseVariants}
-                animate="animate"
-              >
-                <Lottie animationData={voiceorb} loop autoplay />
-              </motion.div>
-              <motion.button
-                className="cta-button"
-                onClick={() => setModalOpen(true)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                variants={pulseVariants}
-                animate="animate"
-              >
-                Join Waitlist
-              </motion.button>
-            </motion.div>
-
-            {successMsg && (
-              <motion.div
-                style={{
-                  color: successMsg.includes("Welcome") ? "#059669" : "#e11d48",
-                  fontWeight: 500,
-                  marginTop: 10,
-                }}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                {successMsg}
-              </motion.div>
-            )}
-          </motion.div>
-        </div>
-
+      {/* Hero Content Container */}
+      <div
+        className="hero-content-flex hero-figma-layout"
+        style={{
+          position: "relative",
+          width: "100vw",
+          maxWidth: "none",
+          margin: 0,
+          padding: 0,
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "flex-start",
+          gap: "0px",
+          zIndex: 2,
+          minHeight: "100vh",
+        }}
+      >
+        {/* Left Content */}
         <motion.div
-          className="hero-right"
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1, delay: 0.5 }}
+          className="hero-left-figma"
+          initial={{ x: -120, opacity: 0 }}
+          whileInView={{ x: 0, opacity: 1 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 1, ease: "easeInOut" }}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            padding: 0,
+            gap: "50px",
+            position: "absolute",
+            width: 525,
+            height: 357,
+            left: 100,
+            top: 170, // Add more space below navbar
+            zIndex: 2,
+          }}
         >
-          <Waitlist users={waitlist} />
+          {/* Top Text and Line */}
+          <div
+            style={{
+              width: 222,
+              height: 45,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              gap: 17,
+            }}
+          >
+            <div
+              style={{
+                width: 222,
+                height: 27,
+                fontFamily: "Poppins",
+                fontWeight: 700,
+                fontSize: 18,
+                lineHeight: "27px",
+                letterSpacing: "-0.16px",
+                color: "rgba(255,255,255,0.8)",
+                textAlign: "left",
+              }}
+            >
+              Talk It Out.{" "}
+              <span style={{ fontWeight: 500, fontStyle: "italic" }}>
+                Grow Closer
+              </span>
+            </div>
+            <img
+              src={LineSVG}
+              alt="decorative line"
+              style={{
+                width: "100%",
+                maxWidth: 222,
+                marginTop: 8,
+                display: "block",
+              }}
+            />
+          </div>
+
+          {/* Main Headline */}
+          <div style={{ width: 525, height: 153, textAlign: "left" }}>
+            <span
+              style={{
+                fontFamily: "Poppins",
+                fontWeight: 600,
+                fontSize: 34,
+                lineHeight: "51px",
+                color: "#fff",
+                letterSpacing: 0,
+              }}
+            >
+              Your relationships
+            </span>
+            <span
+              style={{
+                fontFamily: "Poppins",
+                fontWeight: 400,
+                fontSize: 34,
+                lineHeight: "51px",
+                color: "#fff",
+                letterSpacing: 0,
+              }}
+            >
+              ,{" "}
+            </span>
+            <span
+              style={{
+                fontFamily: "Poppins",
+                fontWeight: 600,
+                fontStyle: "italic",
+                fontSize: 34,
+                lineHeight: "51px",
+                color: "#8349ff",
+                letterSpacing: 0,
+              }}
+            >
+              reimagined
+            </span>
+            <span
+              style={{
+                fontFamily: "Poppins",
+                fontWeight: 400,
+                fontSize: 34,
+                lineHeight: "51px",
+                color: "#fff",
+                letterSpacing: 0,
+              }}
+            >
+              —<br />
+              through conversation
+              <br />
+              and clarity.
+            </span>
+          </div>
+
+          {/* CTA Button */}
+          <button
+            onClick={() => setModalOpen(true)}
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "flex-start",
+              alignItems: "center",
+              padding: "10px 30px",
+              gap: "10px",
+              width: 232,
+              height: 59,
+              background:
+                "linear-gradient(110.12deg, #1E2ADC -6.17%, #91187F 45.94%, #8434F1 105.76%)",
+              borderRadius: 50,
+              border: "none",
+              color: "#F5F5F5",
+              fontFamily: "Poppins",
+              fontWeight: 600,
+              fontSize: 20,
+              lineHeight: "30px",
+              letterSpacing: "-0.175532px",
+              cursor: "pointer",
+              boxShadow: "0 8px 32px rgba(131, 73, 255, 0.3)",
+              marginTop: 20,
+            }}
+          >
+            Join Beta Testing
+          </button>
         </motion.div>
+
+        {/* Centered Voice Orb */}
+        <div
+          className="hero-orb-center-figma"
+          style={{
+            position: "absolute",
+            left: 600,
+            top: 120,
+            width: 400,
+            height: 400,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 2,
+          }}
+        >
+          <Lottie
+            animationData={voiceorb}
+            loop
+            autoplay
+            style={{
+              width: "100%",
+              height: "100%",
+              filter: "drop-shadow(0 0 50px rgba(131, 73, 255, 0.3))",
+            }}
+          />
+        </div>
       </div>
 
-      <WaitlistModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSubmit={handleJoin}
-        isSubmitting={isSubmitting}
-      />
+      {/* Bottom Right Text */}
+      <motion.div
+        className="hero-bottom-right-figma"
+        initial={{ x: 120, opacity: 0 }}
+        whileInView={{ x: 0, opacity: 1 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 1, ease: "easeInOut", delay: 0.2 }}
+        style={{
+          position: "absolute",
+          width: 402,
+          height: 142,
+          right: 100,
+          top: 500,
+          zIndex: 2,
+          textAlign: "left",
+        }}
+      >
+        <span
+          style={{
+            fontFamily: "Poppins",
+            fontWeight: 600,
+            fontSize: 20,
+            lineHeight: "140%",
+            letterSpacing: "-0.17px",
+            color: "#8349ff",
+          }}
+        >
+          CLO
+        </span>
+        <span
+          style={{
+            fontFamily: "Poppins",
+            fontWeight: 300,
+            fontSize: 20,
+            lineHeight: "140%",
+            letterSpacing: "-0.17px",
+            color: "#fff",
+          }}
+        >
+          {" "}
+          is your voice-first AI confidant. Just speak—
+        </span>
+        <span
+          style={{
+            fontFamily: "Poppins",
+            fontWeight: 600,
+            fontSize: 20,
+            lineHeight: "140%",
+            letterSpacing: "-0.17px",
+            color: "#fff",
+          }}
+        >
+          CLO listens, understands, & reflects back powerful insights
+        </span>
+        <span
+          style={{
+            fontFamily: "Poppins",
+            fontWeight: 300,
+            fontSize: 20,
+            lineHeight: "140%",
+            letterSpacing: "-0.17px",
+            color: "#fff",
+          }}
+        >
+          {" "}
+          to help you navigate your relationships with more self-awareness
+        </span>
+      </motion.div>
+
+      {/* Success Message */}
+      {successMsg && (
+        <motion.div
+          style={{
+            position: "fixed",
+            top: "20px",
+            right: "20px",
+            background: successMsg.includes("Welcome")
+              ? "rgba(16, 185, 129, 0.9)"
+              : "rgba(239, 68, 68, 0.9)",
+            color: "#ffffff",
+            padding: "1rem 1.5rem",
+            borderRadius: "8px",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
+            zIndex: 1000,
+            fontFamily: "Poppins",
+            fontWeight: 500,
+          }}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+        >
+          {successMsg}
+        </motion.div>
+      )}
+
+      {modalOpen && (
+        <WaitlistModal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          onSubmit={handleJoin}
+          isSubmitting={isSubmitting}
+        />
+      )}
     </section>
   );
 };

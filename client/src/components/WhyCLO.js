@@ -1,114 +1,201 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { Heart, Zap, Target, Smile, MessageCircle, Users } from "lucide-react";
-import "keen-slider/keen-slider.min.css";
-import { useKeenSlider } from "keen-slider/react";
-
-const features = [
-  {
-    icon: <Heart size={40} />, // Voice-first = Human-first
-    title: "Voice-first = Human-first",
-    description:
-      "Typing is filtered. Talking is raw. CLO taps into your true tone and subtext to surface deeper insights.",
-  },
-  {
-    icon: <Zap size={40} />, // Emotional Intelligence Meets AI
-    title: "Emotional Intelligence Meets AI",
-    description:
-      "Powered by large language models trained for nuance, empathy, and relationship dynamics.",
-  },
-  {
-    icon: <Target size={40} />, // Not Just Tracking—Transforming
-    title: "Not Just Tracking—Transforming",
-    description:
-      "CLO doesn't just listen; it nudges growth. Expect thoughtful prompts, emotional trendlines, and perspective shifts.",
-  },
-  {
-    icon: <Smile size={40} />, // Positive Feedback
-    title: "Celebrate Progress",
-    description:
-      "CLO helps you recognize and celebrate your growth and positive relationship moments.",
-  },
-  {
-    icon: <MessageCircle size={40} />, // Conversation
-    title: "Conversational Insights",
-    description:
-      "Get actionable insights from your conversations, not just data points.",
-  },
-  {
-    icon: <Users size={40} />, // Community
-    title: "Built for Real Connections",
-    description:
-      "CLO is designed to help you connect better with yourself and others, every day.",
-  },
-];
+import LineSVG from "../assets/line.svg";
 
 const WhyCLO = () => {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
-  const [sliderRef] = useKeenSlider({
-    loop: true,
-    slides: { perView: 1, spacing: 16 },
-    breakpoints: {
-      "(min-width: 600px)": { slides: { perView: 2, spacing: 24 } },
-      "(min-width: 900px)": { slides: { perView: 3, spacing: 32 } },
-    },
-    renderMode: "performance",
-    dragSpeed: 1.2,
-    created(s) {
-      setTimeout(() => s.moveToIdx(1), 500);
-    },
-    animation: { duration: 800, easing: (t) => t },
-    autoplay: true,
-  });
 
-  React.useEffect(() => {
-    let interval;
-    if (sliderRef.current) {
-      interval = setInterval(() => {
-        sliderRef.current.next();
-      }, 3000);
-    }
-    return () => clearInterval(interval);
-  }, [sliderRef]);
+  const features = [
+    {
+      title: "Real Insights That Shift Perspective",
+      description:
+        "You'll hear yourself more clearly—with space to reflect, process, and find what's really going on beneath the surface.",
+      size: "small",
+    },
+    {
+      title: "Built to Understand Human Emotions",
+      description:
+        "Trained in the dynamics of human relationships, it captures the nuances of words, pauses, and emotional undertones, interpreting communication with precision.",
+      size: "large",
+    },
+    {
+      title: "Gentle Nudges That Drive Growth",
+      description:
+        "From subtle patterns to profound realizations, this app empowers you to navigate your journey with enhanced self-awareness and emotional ease. It offers tools and insights that encourage personal growth, helping you to reflect on your experiences and make meaningful progress in your life.",
+      size: "full",
+    },
+  ];
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.3,
+      },
+    },
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut",
+      },
+    },
+  };
 
   return (
-    <section className="section why-clo">
+    <section className="section why-clo" id="why-clo">
       <div className="container">
         <motion.div
           ref={ref}
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
+          initial={{ opacity: 0, y: 80 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 1, ease: "easeInOut" }}
           className="section-header"
         >
-          <h2 className="section-title">🧠 Why CLO?</h2>
-          <div className="testimonial">
-            <blockquote>
-              "I didn't realize how much I was holding in—until CLO reflected it
-              back."
-            </blockquote>
-          </div>
+          <motion.h2
+            className="why-clo-title"
+            initial={{ opacity: 0, y: 80 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 1, ease: "easeInOut", delay: 0.1 }}
+          >
+            Why CLO AI
+          </motion.h2>
+
+          <motion.img
+            src={LineSVG}
+            alt="decorative line"
+            initial={{ opacity: 0, y: 80 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 1, ease: "easeInOut", delay: 0.2 }}
+            style={{
+              width: "100%",
+              maxWidth: 608,
+              margin: "24px auto",
+              display: "block",
+              position: "relative",
+              zIndex: 2,
+            }}
+          />
+
+          <motion.p
+            className="why-clo-description"
+            initial={{ opacity: 0, y: 80 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 1, ease: "easeInOut", delay: 0.3 }}
+          >
+            CLO helps you uncover what you're really feeling—by reflecting your
+            voice, tone, and emotional patterns back to you in ways you never
+            expected. It's clarity, without overthinking.
+          </motion.p>
         </motion.div>
-        <div ref={sliderRef} className="features-grid keen-slider">
+
+        <motion.div
+          className="features-grid"
+          variants={containerVariants}
+          initial="hidden"
+          animate={inView ? "visible" : "hidden"}
+        >
           {features.map((feature, index) => (
             <motion.div
               key={index}
-              className="feature-card keen-slider__slide"
-              initial={{ opacity: 0, y: 30 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.8, delay: index * 0.1 }}
+              variants={cardVariants}
+              className="feature-card"
               whileHover={{
-                scale: 1.05,
-                boxShadow: "0 8px 32px rgba(37,99,235,0.12)",
+                y: -5,
+                transition: { duration: 0.2 },
               }}
             >
-              <div className="feature-icon pulse-anim">{feature.icon}</div>
-              <h3 className="feature-title">{feature.title}</h3>
-              <p className="feature-description">{feature.description}</p>
+              <motion.div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  gap: "17px",
+                  width: "100%",
+                  height: "116px",
+                }}
+                initial={{ opacity: 0, y: 15 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.5 + index * 0.1 }}
+              >
+                <motion.h3
+                  className="feature-title"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={inView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.6, delay: 0.5 + index * 0.1 }}
+                  style={{ textAlign: "left", fontWeight: 400 }}
+                >
+                  {(() => {
+                    if (feature.title.includes("That Shift Perspective")) {
+                      return (
+                        <>
+                          <span style={{ fontStyle: "italic" }}>
+                            Real Insights{" "}
+                          </span>
+                          <span
+                            style={{ fontWeight: 700, fontStyle: "italic" }}
+                          >
+                            That Shift Perspective
+                          </span>
+                        </>
+                      );
+                    }
+                    if (feature.title.includes("Drive Growth")) {
+                      return (
+                        <>
+                          <span style={{ fontStyle: "italic" }}>
+                            Gentle Nudges That{" "}
+                          </span>
+                          <span
+                            style={{ fontWeight: 700, fontStyle: "italic" }}
+                          >
+                            Drive Growth
+                          </span>
+                        </>
+                      );
+                    }
+                    if (feature.title.includes("Human Emotions")) {
+                      return (
+                        <>
+                          <span style={{ fontStyle: "italic" }}>
+                            Built to Understand{" "}
+                          </span>
+                          <span
+                            style={{ fontWeight: 700, fontStyle: "italic" }}
+                          >
+                            Human Emotions
+                          </span>
+                        </>
+                      );
+                    }
+                    return feature.title;
+                  })()}
+                </motion.h3>
+                <motion.p
+                  className="feature-description"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={inView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
+                  style={{ textAlign: "left" }}
+                >
+                  {feature.description}
+                </motion.p>
+              </motion.div>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
