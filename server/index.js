@@ -166,9 +166,6 @@ app.post("/api/collect-email", async (req, res) => {
     if (!email || !email.includes("@")) {
       return res.status(400).json({ error: "Valid email is required" });
     }
-    if (!fullName || fullName.trim().length < 2) {
-      return res.status(400).json({ error: "Full name is required" });
-    }
 
     // Use MongoDB if connected, otherwise use file storage
     if (emailsCollection) {
@@ -180,7 +177,7 @@ app.post("/api/collect-email", async (req, res) => {
 
       await emailsCollection.insertOne({
         email,
-        fullName,
+        fullName: fullName || "",
         createdAt: new Date(),
       });
     } else {
@@ -192,7 +189,7 @@ app.post("/api/collect-email", async (req, res) => {
         return res.status(409).json({ error: "Email already registered" });
       }
 
-      emails.push({ email, fullName, createdAt: new Date() });
+      emails.push({ email, fullName: fullName || "", createdAt: new Date() });
       saveEmails(emails);
     }
 
@@ -235,7 +232,7 @@ async function sendWelcomeEmail(email, fullName) {
           <p>Thank you for joining the CLO beta waitlist! We're excited to have you on board.</p>
           <p><strong>What's CLO?</strong></p>
           <p>CLO is your voice-first AI confidant, designed to help you reflect on your romantic and professional relationships. Just talk—and CLO listens, learns, and gives you actionable insights.</p>
-          <p>We'll notify you as soon as the beta is ready. In the meantime, you can learn more at <a href="https://heyclo.com">heyclo.com</a></p>
+          <p>We'll notify you as soon as the beta is ready.</p>
           <p>Best regards,<br>The CLO Team</p>
         </div>
       `,

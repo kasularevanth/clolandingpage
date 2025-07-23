@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Lottie from "lottie-react";
 import voiceorb from "../assets/voiceorb.json";
+import toast from "react-hot-toast";
 
 const WaitlistModal = ({ isOpen, onClose, onSubmit, isSubmitting }) => {
   const [fullName, setFullName] = useState("");
@@ -34,10 +35,26 @@ const WaitlistModal = ({ isOpen, onClose, onSubmit, isSubmitting }) => {
     return true;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validate()) {
-      onSubmit({ fullName: fullName.trim(), email: email.trim() });
+    if (!fullName.trim() || !email.trim()) {
+      toast.error("Please fill in both fields.", {
+        duration: 2000,
+        position: "top-right",
+      });
+      return;
+    }
+    try {
+      await onSubmit({ fullName: fullName.trim(), email: email.trim() });
+      // Close modal immediately after submit
+      onClose();
+    } catch (err) {
+      // Show backend error as toast on right
+      toast.error(err?.message || "Something went wrong.", {
+        duration: 2000,
+        position: "top-right",
+      });
+      // Modal is already closed
     }
   };
 
@@ -181,24 +198,12 @@ const WaitlistModal = ({ isOpen, onClose, onSubmit, isSubmitting }) => {
                 />
               </motion.label>
 
-              <AnimatePresence>
-                {error && (
-                  <motion.div
-                    className="modal-error"
-                    initial={{ opacity: 0, y: -10, scale: 0.9 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -10, scale: 0.9 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    {error}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {/* Remove fixed error message, show only toast */}
 
               <motion.button
                 type="submit"
                 className="modal-submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !fullName.trim() || !email.trim()}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 variants={itemVariants}

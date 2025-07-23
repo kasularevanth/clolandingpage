@@ -9,6 +9,10 @@ const CTA = ({ email, setEmail, onSubmit, isSubmitting }) => {
     threshold: 0.1,
   });
 
+  // Remove full name field and validation, only use email
+  // Show backend error/success as toast, not as fixed message
+  // Dialog/modal should close on success or error
+
   return (
     <section className="email-collection">
       <div className="container">

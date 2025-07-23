@@ -40,7 +40,9 @@ function HomePage() {
       }
     } catch (error) {
       if (error.response?.status === 409) {
-        toast.error("This email is already registered!");
+        toast.error("Email already registered");
+      } else if (error.response?.data?.error) {
+        toast.error(error.response.data.error);
       } else {
         toast.error("Something went wrong. Please try again.");
       }
