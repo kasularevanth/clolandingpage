@@ -72,7 +72,14 @@ body {
   padding: 10px 20px;
   border-radius: 46.7816px;
   background: transparent;
-  border: none;
+  border: 0.5px solid;
+  border-image: linear-gradient(
+    90deg,
+    #ffffff 0%,
+    #cbcbcb 50.96%,
+    #ffffff 100%
+  );
+  border-image-slice: 1;
   margin-left: 18.71px;
   width: 113px;
   height: 29.94px;
@@ -92,13 +99,13 @@ body {
 .navbar-nav {
   display: flex;
   align-items: center;
-  gap: 37.43px;
+  gap: 37px; /* reduced gap */
   list-style: none;
   margin: 0;
   padding: 0;
-  width: 328.85px;
+  width: auto; /* remove fixed width */
   height: 52.4px;
-  justify-content: center;
+  flex-wrap: nowrap; /* prevent wrapping */
 }
 
 .navbar-nav li {
@@ -134,16 +141,15 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  font-weight: 500; /* unified font weight */
+  width: auto; /* remove fixed width */
+  white-space: nowrap; /* prevent text from wrapping */
 }
 
-.navbar-nav li:first-child a {
-  font-weight: 700;
-  width: 52px;
-}
-
+.navbar-nav li:first-child a,
 .navbar-nav li:nth-child(2) a,
 .navbar-nav li:nth-child(3) a {
-  font-weight: 400;
+  font-weight: 500;
 }
 
 .navbar-nav li:nth-child(2) a {
@@ -236,9 +242,9 @@ body {
 .why-clo {
   background: #100417;
   position: relative;
-  padding: 150px 0;
+  padding: 60px 0; /* Reduced from 150px 0 */
   z-index: 1;
-  margin-top: 100px;
+  margin-top: 40px; /* Reduced from 100px */
 }
 
 .why-clo::before {
@@ -364,9 +370,9 @@ body {
   background: #100417;
   text-align: center;
   position: relative;
-  padding: 150px 0;
+  padding: 60px 0; /* was 150px 0 */
+  margin-top: 40px; /* was 100px */
   z-index: 1;
-  margin-top: 100px;
 }
 
 .email-collection-content {
@@ -375,7 +381,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 80px;
+  gap: 32px; /* was 80px */
 }
 
 .email-title {
@@ -452,7 +458,7 @@ body {
   padding: 60px 0 40px 0;
   position: relative;
   z-index: 1;
-  margin-top: 100px;
+  margin-top: 0;
 }
 
 .footer-content {
@@ -1299,13 +1305,10 @@ html {
 }
 .footer-content {
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  max-width: 1240px;
-  margin: 0 auto;
-  width: 100%;
-  gap: 10px;
+  flex-wrap: nowrap; /* prevent wrapping */
+  gap: 32px;
 }
 .footer-links ul {
   display: flex;
@@ -1358,22 +1361,14 @@ html {
 }
 @media (max-width: 900px) {
   .footer-content {
-    flex-direction: column;
-    align-items: center;
-    gap: 2rem;
-    text-align: center;
+    gap: 16px;
   }
-  .footer-links ul {
-    flex-direction: column;
-    gap: 18px;
-    font-size: 16px;
+  .footer-links {
+    gap: 16px;
   }
-  .footer-links a {
-    font-size: 16px;
-  }
-  .footer-social {
-    justify-content: center;
-    gap: 18px;
+  .footer-links a,
+  .footer-links button {
+    font-size: 15px;
   }
 }
 @media (max-width: 600px) {

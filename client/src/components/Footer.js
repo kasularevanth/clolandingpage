@@ -36,7 +36,7 @@ const Footer = () => {
             <i className="fab fa-facebook-f"></i>
           </a>
           <a
-            href="https://twitter.com"
+            href="https://x.com/heycloai"
             target="_blank"
             rel="noopener noreferrer"
           >

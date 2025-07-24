@@ -5,22 +5,29 @@ import axios from "axios";
 import Lottie from "lottie-react";
 import voiceorb from "../assets/voiceorb.json";
 import LineSVG from "../assets/line.svg";
+import toast from "react-hot-toast";
 
 const Hero = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successMsg, setSuccessMsg] = useState("");
 
   const handleJoin = async ({ fullName, email }) => {
     setIsSubmitting(true);
-    setSuccessMsg("");
     try {
       await axios.post("/api/collect-email", { fullName, email });
-      setSuccessMsg("Welcome to CLO! Check your inbox for a welcome email.");
       setModalOpen(false);
+      toast.success("Welcome to CLO! Check your inbox for a welcome email.", {
+        duration: 4000,
+        position: "top-center",
+      });
     } catch (e) {
-      setSuccessMsg(
-        e.response?.data?.error || "Something went wrong. Try again."
+      setModalOpen(false);
+      toast.error(
+        e.response?.data?.error || "Something went wrong. Try again.",
+        {
+          duration: 4000,
+          position: "top-center",
+        }
       );
     } finally {
       setIsSubmitting(false);
@@ -321,33 +328,7 @@ const Hero = () => {
         </span>
       </motion.div>
 
-      {/* Success Message */}
-      {successMsg && (
-        <motion.div
-          style={{
-            position: "fixed",
-            top: "20px",
-            right: "20px",
-            background: successMsg.includes("Welcome")
-              ? "rgba(16, 185, 129, 0.9)"
-              : "rgba(239, 68, 68, 0.9)",
-            color: "#ffffff",
-            padding: "1rem 1.5rem",
-            borderRadius: "8px",
-            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
-            zIndex: 1000,
-            fontFamily: "Poppins",
-            fontWeight: 500,
-          }}
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.3 }}
-        >
-          {successMsg}
-        </motion.div>
-      )}
-
+      {/* Remove the fixed successMsg popup */}
       {modalOpen && (
         <WaitlistModal
           isOpen={modalOpen}

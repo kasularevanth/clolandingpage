@@ -4,25 +4,30 @@ import { Link, useLocation } from "react-router-dom";
 import WaitlistModal from "./WaitlistModal";
 import axios from "axios";
 import Asset2 from "../assets/Asset 2.svg";
+import toast from "react-hot-toast";
 
 const Navigation = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successMsg, setSuccessMsg] = useState("");
   const location = useLocation();
 
   const handleJoin = async ({ fullName, email }) => {
     setIsSubmitting(true);
-    setSuccessMsg("");
     try {
       await axios.post("/api/collect-email", { fullName, email });
-      setSuccessMsg(
-        "Welcome to the waitlist! Check your inbox for a welcome email."
-      );
       setModalOpen(false);
+      toast.success("Welcome to CLO! Check your inbox for a welcome email.", {
+        duration: 4000,
+        position: "top-center",
+      });
     } catch (e) {
-      setSuccessMsg(
-        e.response?.data?.error || "Something went wrong. Try again."
+      setModalOpen(false);
+      toast.error(
+        e.response?.data?.error || "Something went wrong. Try again.",
+        {
+          duration: 4000,
+          position: "top-center",
+        }
       );
     } finally {
       setIsSubmitting(false);
@@ -132,26 +137,14 @@ const Navigation = () => {
         </motion.nav>
       </div>
 
+      {/* Remove the top banner popup and fixed success message */}
+      {/* Only WaitlistModal remains for registration */}
       <WaitlistModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         onSubmit={handleJoin}
         isSubmitting={isSubmitting}
       />
-
-      {successMsg && (
-        <motion.div
-          className={`success-message ${
-            successMsg.includes("Welcome") ? "" : "error-message"
-          }`}
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.3 }}
-        >
-          {successMsg}
-        </motion.div>
-      )}
     </>
   );
 };
