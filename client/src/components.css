@@ -220,8 +220,9 @@ body {
   background: #100417;
   position: relative;
   z-index: 1;
+  padding: 40px 0;
   margin-top: 0;
-  padding-top: 100px;
+  scroll-margin-top: 40px;
 }
 
 .how-it-works::before {
