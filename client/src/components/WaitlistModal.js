@@ -208,7 +208,7 @@ const WaitlistModal = ({ isOpen, onClose, onSubmit, isSubmitting }) => {
                 whileTap={{ scale: 0.95 }}
                 variants={itemVariants}
               >
-                {isSubmitting ? "Joining..." : "Join Waitlist"}
+                {isSubmitting ? "Submitting..." : "Submit"}
               </motion.button>
             </motion.form>
           </motion.div>

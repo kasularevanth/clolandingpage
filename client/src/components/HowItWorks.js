@@ -6,6 +6,7 @@ import Step3ScreensSVG from "../assets/step3screens.svg";
 import MenAvatar from "../assets/men.jpg";
 import WomenAvatar from "../assets/women.jpg";
 import LineSVG from "../assets/line.svg";
+import Step1ScreenSVG from "../assets/step1screen.svg";
 
 const HowItWorks = () => {
   const [ref, inView] = useInView({
@@ -136,7 +137,7 @@ const HowItWorks = () => {
             alignItems: "center",
             justifyContent: "space-between",
             gap: "4rem",
-            marginBottom: "150px",
+            // marginBottom: "150px",
             position: "relative",
             zIndex: 2,
           }}
@@ -147,15 +148,15 @@ const HowItWorks = () => {
             whileInView={{ x: 0, opacity: 1 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 1, ease: "easeInOut" }}
-            style={{ flex: "1", maxWidth: "600px" }}
+            style={{ flex: 1, maxWidth: "600px" }}
           >
             <h3
               style={{
                 fontFamily: "Poppins",
                 fontWeight: 500,
-                fontSize: "32px",
+                fontSize: 32,
                 lineHeight: "48px",
-                color: "#ffffff",
+                color: "#fff",
                 margin: "0 0 20px 0",
                 textAlign: "left",
               }}
@@ -166,9 +167,9 @@ const HowItWorks = () => {
               style={{
                 fontFamily: "DM Sans",
                 fontWeight: 200,
-                fontSize: "24px",
+                fontSize: 24,
                 lineHeight: "31px",
-                color: "#ffffff",
+                color: "#fff",
                 margin: 0,
                 textAlign: "left",
               }}
@@ -179,187 +180,35 @@ const HowItWorks = () => {
             </p>
           </motion.div>
 
-          {/* Right side content - Avatars and Badges */}
+          {/* Right side SVG with badges (step1screen.svg) */}
           <motion.div
             initial={{ x: 120, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 1, ease: "easeInOut", delay: 0.2 }}
-            style={{ flex: "0 0 400px", position: "relative", height: "300px" }}
+            style={{
+              flex: "0 0 520px",
+              position: "relative",
+              height: "390px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
           >
-            {/* Main container for avatars */}
-            <div
+            <img
+              src={Step1ScreenSVG}
+              alt="Step 1 Screens"
               style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "20px",
-                position: "absolute",
-                left: "50%",
-                top: "50%",
-                transform: "translate(-50%, -50%)",
+                width: 520,
+                height: 390,
+                maxWidth: "100%",
+                maxHeight: "100%",
+                display: "block",
+                margin: "0 auto",
+                zIndex: 2,
+                position: "relative",
               }}
-            >
-              {/* Avatar pair */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "-15px",
-                }}
-              >
-                <div
-                  style={{
-                    width: "80px",
-                    height: "80px",
-                    background: `url(${MenAvatar})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    borderRadius: "50%",
-                    border: "3px solid #fff",
-                    zIndex: 2,
-                  }}
-                />
-                <div
-                  style={{
-                    width: "80px",
-                    height: "80px",
-                    background: `url(${WomenAvatar})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    borderRadius: "50%",
-                    border: "3px solid #fff",
-                    marginLeft: "-15px",
-                    zIndex: 1,
-                  }}
-                />
-              </div>
-
-              {/* You & Jordan text */}
-              <div
-                style={{
-                  background: "rgba(173, 82, 238, 0.23)",
-                  border: "2px solid rgba(255, 255, 255, 0.18)",
-                  borderRadius: "25px",
-                  padding: "8px 16px",
-                  fontFamily: "DM Sans",
-                  fontWeight: 400,
-                  fontSize: "18px",
-                  color: "#FFFFFF",
-                }}
-              >
-                You & Jordan
-              </div>
-            </div>
-
-            {/* Relationship type badges positioned around */}
-            <div
-              style={{
-                position: "absolute",
-                top: "10px",
-                right: "20px",
-                transform: "rotate(8deg)",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "6px 12px",
-                  background:
-                    "linear-gradient(151.07deg, #9D28F0 13.14%, #E00C5C 85.75%)",
-                  borderRadius: "20px",
-                  fontSize: "14px",
-                  color: "#FFFFFF",
-                  fontWeight: 600,
-                }}
-              >
-                <span>💖</span>
-                <span>Romantic</span>
-              </div>
-            </div>
-
-            <div
-              style={{
-                position: "absolute",
-                bottom: "60px",
-                left: "10px",
-                transform: "rotate(-5deg)",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  padding: "5px 10px",
-                  background:
-                    "linear-gradient(275.48deg, #4C66E7 -5.24%, #A724DA 101.68%)",
-                  borderRadius: "18px",
-                  fontSize: "13px",
-                  color: "#FFFFFF",
-                  fontWeight: 600,
-                }}
-              >
-                <span>👫</span>
-                <span>Friends</span>
-              </div>
-            </div>
-
-            <div
-              style={{
-                position: "absolute",
-                top: "40px",
-                right: "80px",
-                transform: "rotate(15deg)",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  padding: "5px 10px",
-                  background:
-                    "linear-gradient(140.29deg, #D02E31 14.25%, #FF9500 100.75%)",
-                  borderRadius: "18px",
-                  fontSize: "13px",
-                  color: "#FFFFFF",
-                  fontWeight: 600,
-                }}
-              >
-                <span>👨‍👩‍👧‍👦</span>
-                <span>Family</span>
-              </div>
-            </div>
-
-            <div
-              style={{
-                position: "absolute",
-                bottom: "20px",
-                left: "50px",
-                transform: "rotate(-10deg)",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  padding: "5px 10px",
-                  background:
-                    "linear-gradient(151.07deg, #FF806D 13.14%, #ED095F 85.75%)",
-                  borderRadius: "18px",
-                  fontSize: "13px",
-                  color: "#FFFFFF",
-                  fontWeight: 600,
-                }}
-              >
-                <span>💼</span>
-                <span>Professional</span>
-              </div>
-            </div>
+            />
           </motion.div>
         </div>
 
@@ -389,7 +238,7 @@ const HowItWorks = () => {
             alignItems: "center",
             justifyContent: "flex-start",
             gap: "4rem",
-            marginBottom: "150px",
+            // marginBottom: "150px",
             position: "relative",
             zIndex: 2,
             minHeight: 500,
@@ -539,7 +388,7 @@ const HowItWorks = () => {
             gap: "4rem",
             position: "relative",
             zIndex: 2,
-            marginTop: "100px",
+            // marginTop: "100px",
           }}
         >
           {/* Left side content with animation */}

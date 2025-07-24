@@ -245,6 +245,7 @@ body {
   padding: 60px 0; /* Reduced from 150px 0 */
   z-index: 1;
   margin-top: 40px; /* Reduced from 100px */
+  scroll-margin-top: 40px;
 }
 
 .why-clo::before {
@@ -537,11 +538,12 @@ body {
 
 .modal-card {
   background: linear-gradient(
-    135deg,
-    rgba(131, 73, 255, 0.9) 0%,
-    rgba(185, 131, 255, 0.9) 100%
+    250.58deg,
+    rgba(255, 31, 162, 0.5) 10.43%,
+    rgba(65, 32, 231, 0.4) 46.23%,
+    rgba(134, 77, 255, 0.5) 97.7%
   );
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(50px);
   border-radius: 18px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   padding: 2.5rem 2rem 2rem 2rem;

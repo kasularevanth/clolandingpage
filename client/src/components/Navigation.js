@@ -49,7 +49,7 @@ const Navigation = () => {
         style={{
           position: "fixed",
           left: 0,
-          top: 50,
+          top: 16,
           width: "100vw",
           zIndex: 1000,
         }}
@@ -103,15 +103,6 @@ const Navigation = () => {
               </li>
               <li>
                 {isHomePage ? (
-                  <a href="#why-clo" onClick={() => scrollToSection("why-clo")}>
-                    Why CLO AI
-                  </a>
-                ) : (
-                  <Link to="/">Why CLO AI</Link>
-                )}
-              </li>
-              <li>
-                {isHomePage ? (
                   <a
                     href="#how-it-works"
                     onClick={() => scrollToSection("how-it-works")}
@@ -120,6 +111,15 @@ const Navigation = () => {
                   </a>
                 ) : (
                   <Link to="/">How it Works</Link>
+                )}
+              </li>
+              <li>
+                {isHomePage ? (
+                  <a href="#why-clo" onClick={() => scrollToSection("why-clo")}>
+                    Why CLO AI
+                  </a>
+                ) : (
+                  <Link to="/">Why CLO AI</Link>
                 )}
               </li>
             </ul>
